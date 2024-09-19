@@ -8,13 +8,13 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
                 <form action="{{ route('padres.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <!-- Información del Padre -->
-                    <div class="mb-6">
-                        <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">Información del Padre</h3>
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold mb-4 dark:text-gray-200">Información del Padre</h3>
                         <div class="mb-4">
                             <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Padre</label>
                             <input type="text" name="nombre" id="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
@@ -37,18 +37,18 @@
                                 <button type="button" id="capture-button" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
                                     Capturar Foto
                                 </button>
-                                <video id="video" class="w-64 h-48 border border-gray-300 rounded-md" autoplay></video>
-                                <canvas id="canvas" class="w-64 h-48 hidden"></canvas>
-                                <img id="photo" class="w-64 h-48 border border-gray-300 rounded-md hidden">
+                                <video id="video" class="w-full max-w-md border border-gray-300 rounded-md my-4" autoplay></video>
+                                <canvas id="canvas" class="w-full max-w-md border border-gray-300 rounded-md hidden my-4"></canvas>
+                                <img id="photo" class="w-full max-w-md border border-gray-300 rounded-md hidden my-4">
                             </div>
                             <!-- For devices without a webcam -->
-                            <input type="file" id="file-input" name="foto_padre" accept="image/*" class="block mt-1">
+                            <input type="file" id="file-input" name="foto_padre" accept="image/*" class="block mt-4 w-full max-w-md">
                         </div>
                     </div>
 
                     <!-- Información de los Hijos -->
-                    <div class="mb-6">
-                        <h3 class="text-xl font-semibold mb-2 dark:text-gray-200">Información de los Hijos</h3>
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold mb-4 dark:text-gray-200">Información de los Hijos</h3>
                         <div id="hijos-container">
                             <!-- Campos para los hijos se agregarán dinámicamente aquí -->
                         </div>
