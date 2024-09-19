@@ -32,13 +32,17 @@
 
                         <div class="mb-4">
                             <label for="foto_padre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto del Padre</label>
-                            <button type="button" id="capture-button" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
-                                Capturar Foto
-                            </button>
-                            <input type="file" id="file-input" name="foto_padre" class="hidden">
-                            <video id="video" class="w-64 h-48 border border-gray-300 rounded-md" autoplay></video>
-                            <canvas id="canvas" class="w-64 h-48 hidden"></canvas>
-                            <img id="photo" class="w-64 h-48 border border-gray-300 rounded-md hidden">
+                            <!-- For devices with a webcam -->
+                            <div id="camera-section" class="block">
+                                <button type="button" id="capture-button" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
+                                    Capturar Foto
+                                </button>
+                                <video id="video" class="w-64 h-48 border border-gray-300 rounded-md" autoplay></video>
+                                <canvas id="canvas" class="w-64 h-48 hidden"></canvas>
+                                <img id="photo" class="w-64 h-48 border border-gray-300 rounded-md hidden">
+                            </div>
+                            <!-- For devices without a webcam -->
+                            <input type="file" id="file-input" name="foto_padre" accept="image/*" class="block mt-1">
                         </div>
                     </div>
 
@@ -71,40 +75,55 @@
             const captureButton = document.getElementById('capture-button');
             const fileInput = document.getElementById('file-input');
 
-            // Get access to the camera
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch(error => {
-                    console.error('Error accessing the camera: ', error);
-                });
+            // Check if webcam is available
+            navigator.mediaDevices.enumerateDevices().then(devices => {
+                const hasWebcam = devices.some(device => device.kind === 'videoinput');
 
-            captureButton.addEventListener('click', () => {
-                const context = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                if (hasWebcam) {
+                    // Get access to the camera
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            video.srcObject = stream;
+                            video.play();
+                        })
+                        .catch(error => {
+                            console.error('Error accessing the camera: ', error);
+                        });
 
-                // Convert the image to a Blob
-                canvas.toBlob(blob => {
-                    // Create a file object
-                    const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
+                    captureButton.addEventListener('click', () => {
+                        const context = canvas.getContext('2d');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    // Set the file object as the value of the file input
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInput.files = dataTransfer.files;
+                        // Convert the image to a Blob
+                        canvas.toBlob(blob => {
+                            // Create a file object
+                            const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
 
-                    // Update the preview image
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        photo.src = e.target.result;
-                        photo.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }, 'image/png');
+                            // Set the file object as the value of the file input
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            fileInput.files = dataTransfer.files;
+
+                            // Update the preview image
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                photo.src = e.target.result;
+                                photo.classList.remove('hidden');
+                            };
+                            reader.readAsDataURL(file);
+                        }, 'image/png');
+                    });
+
+                    // Show the camera section and hide the file input for desktops with a webcam
+                    document.getElementById('camera-section').style.display = 'block';
+                    fileInput.style.display = 'none';
+                } else {
+                    // Hide the camera section and show the file input for devices without a webcam
+                    document.getElementById('camera-section').style.display = 'none';
+                    fileInput.style.display = 'block';
+                }
             });
 
             // Handle adding new children
