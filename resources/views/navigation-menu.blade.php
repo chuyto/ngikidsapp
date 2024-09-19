@@ -151,6 +151,15 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('servicios.index') }}" :active="request()->routeIs('servicios.index')">
+                {{ __('Servicios') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('padres.index') }}" :active="request()->routeIs('padres.index')">
+                {{ __('Registros') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('asistencias.create') }}" :active="request()->routeIs('asistencias.create')">
+                {{ __('Asistencia') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
