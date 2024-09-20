@@ -32,27 +32,12 @@
 
                         <div class="mb-4">
                             <label for="foto_padre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto del Padre</label>
-                            <div class="hidden md:block">
-                                <!-- Webcam para escritorio -->
-                                <video id="video" class="w-full max-w-md border border-gray-300 rounded-md" autoplay></video>
-                                <button type="button" id="capture-button" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
-                                    Capturar Foto
-                                </button>
-                                <canvas id="canvas" class="hidden"></canvas>
-                                <img id="photo" class="w-full max-w-md border border-gray-300 rounded-md hidden">
-                            </div>
-                            <div class="md:hidden">
-                                <!-- Input para móviles -->
-                                <button type="button" id="switch-camera" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 mb-2">
-                                    Cambiar Cámara
-                                </button>
-                                <video id="mobile-video" class="w-full max-w-md border border-gray-300 rounded-md" autoplay></video>
-                                <button type="button" id="capture-mobile-button" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
-                                    Capturar Foto
-                                </button>
-                                <canvas id="mobile-canvas" class="hidden"></canvas>
-                                <img id="mobile-photo" class="w-full max-w-md border border-gray-300 rounded-md hidden">
-                            </div>
+                            <video id="video" class="w-full max-w-md border border-gray-300 rounded-md" autoplay></video>
+                            <button type="button" id="capture-button" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
+                                Capturar Foto
+                            </button>
+                            <canvas id="canvas" class="hidden"></canvas>
+                            <img id="photo" class="w-full max-w-md border border-gray-300 rounded-md hidden">
                         </div>
                     </div>
 
@@ -80,39 +65,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const video = document.getElementById('video');
-            const mobileVideo = document.getElementById('mobile-video');
             const canvas = document.getElementById('canvas');
-            const mobileCanvas = document.getElementById('mobile-canvas');
             const photo = document.getElementById('photo');
-            const mobilePhoto = document.getElementById('mobile-photo');
             const captureButton = document.getElementById('capture-button');
-            const captureMobileButton = document.getElementById('capture-mobile-button');
             const fileInput = document.getElementById('file-input');
-            let currentCamera = 'environment'; // Inicialmente la cámara trasera
 
             // Función para acceder a la cámara
             function startVideoStream() {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: currentCamera } })
+                navigator.mediaDevices.getUserMedia({ video: true })
                     .then(stream => {
-                        if (video) {
-                            video.srcObject = stream;
-                            video.play();
-                        } else {
-                            mobileVideo.srcObject = stream;
-                            mobileVideo.play();
-                        }
+                        video.srcObject = stream;
+                        video.play();
                     })
                     .catch(error => {
                         console.error('Error accessing the camera: ', error);
                     });
             }
 
-            // Iniciar cámara solo en escritorio
-            if (video) {
-                startVideoStream();
-            }
+            // Iniciar cámara
+            startVideoStream();
 
-            // Capturar foto en escritorio
+            // Capturar foto
             captureButton.addEventListener('click', () => {
                 const context = canvas.getContext('2d');
                 canvas.width = video.videoWidth;
@@ -136,39 +109,6 @@
                     };
                     reader.readAsDataURL(file);
                 }, 'image/png');
-            });
-
-            // Capturar foto en móvil
-            captureMobileButton.addEventListener('click', () => {
-                const context = mobileCanvas.getContext('2d');
-                mobileCanvas.width = mobileVideo.videoWidth;
-                mobileCanvas.height = mobileVideo.videoHeight;
-                context.drawImage(mobileVideo, 0, 0, mobileCanvas.width, mobileCanvas.height);
-
-                // Convertir la imagen a un Blob
-                mobileCanvas.toBlob(blob => {
-                    const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
-
-                    // Establecer el objeto de archivo como el valor del input de archivo
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInput.files = dataTransfer.files;
-
-                    // Actualizar la imagen de vista previa
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        mobilePhoto.src = e.target.result;
-                        mobilePhoto.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }, 'image/png');
-            });
-
-            // Cambiar cámara en móvil
-            document.getElementById('switch-camera').addEventListener('click', () => {
-                currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
-                mobileVideo.srcObject.getTracks().forEach(track => track.stop()); // Detener la cámara actual
-                startVideoStream(); // Reiniciar el flujo de video con la cámara seleccionada
             });
 
             // Manejo de agregar nuevos hijos
