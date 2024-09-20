@@ -94,20 +94,24 @@
 
                 // Convertir la imagen a un Blob
                 canvas.toBlob(blob => {
-                    const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
+                    if (blob) {
+                        const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
 
-                    // Establecer el objeto de archivo como el valor del input de archivo
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    fileInput.files = dataTransfer.files;
+                        // Establecer el objeto de archivo como el valor del input de archivo
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fileInput.files = dataTransfer.files;
 
-                    // Actualizar la imagen de vista previa
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        photo.src = e.target.result;
-                        photo.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
+                        // Actualizar la imagen de vista previa
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            photo.src = e.target.result;
+                            photo.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        console.error('Error capturing photo: Blob is null');
+                    }
                 }, 'image/png');
             });
 
