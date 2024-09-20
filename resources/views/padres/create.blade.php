@@ -32,12 +32,19 @@
 
                         <div class="mb-4">
                             <label for="foto_padre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto del Padre</label>
-                            <video id="video" class="w-full max-w-md border border-gray-300 rounded-md" autoplay></video>
-                            <button type="button" id="capture-button" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
-                                Capturar Foto
-                            </button>
-                            <canvas id="canvas" class="hidden"></canvas>
-                            <img id="photo" class="w-full max-w-md border border-gray-300 rounded-md hidden">
+                            <div class="hidden md:block">
+                                <!-- Webcam para escritorio -->
+                                <video id="video" class="w-full max-w-md border border-gray-300 rounded-md" autoplay></video>
+                                <button type="button" id="capture-button" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
+                                    Capturar Foto
+                                </button>
+                                <canvas id="canvas" class="hidden"></canvas>
+                                <img id="photo" class="w-full max-w-md border border-gray-300 rounded-md hidden">
+                            </div>
+                            <div class="md:hidden">
+                                <!-- Input para móviles -->
+                                <input type="file" id="file-input" name="foto_padre" accept="image/*" capture="environment" class="block mt-4 w-full max-w-md">
+                            </div>
                         </div>
                     </div>
 
@@ -72,7 +79,7 @@
 
             // Función para acceder a la cámara
             function startVideoStream() {
-                navigator.mediaDevices.getUserMedia({ video: true })
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
                     .then(stream => {
                         video.srcObject = stream;
                         video.play();
@@ -82,8 +89,10 @@
                     });
             }
 
-            // Iniciar cámara
-            startVideoStream();
+            // Iniciar cámara solo en escritorio
+            if (video) {
+                startVideoStream();
+            }
 
             // Capturar foto
             captureButton.addEventListener('click', () => {
@@ -94,24 +103,20 @@
 
                 // Convertir la imagen a un Blob
                 canvas.toBlob(blob => {
-                    if (blob) {
-                        const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
+                    const file = new File([blob], 'foto_padre.png', { type: 'image/png' });
 
-                        // Establecer el objeto de archivo como el valor del input de archivo
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-                        fileInput.files = dataTransfer.files;
+                    // Establecer el objeto de archivo como el valor del input de archivo
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
 
-                        // Actualizar la imagen de vista previa
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            photo.src = e.target.result;
-                            photo.classList.remove('hidden');
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        console.error('Error capturing photo: Blob is null');
-                    }
+                    // Actualizar la imagen de vista previa
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        photo.src = e.target.result;
+                        photo.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
                 }, 'image/png');
             });
 
