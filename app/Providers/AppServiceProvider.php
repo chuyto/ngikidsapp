@@ -22,12 +22,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Forzar el uso de HTTPS si APP_URL está configurado con HTTPS
-        $appUrl = Config::get('app.url');
+         $appUrl = Config::get('app.url');
 
-        URL::forceRootUrl($appUrl);
+         URL::forceRootUrl($appUrl);
 
-        if (str_starts_with($appUrl, 'https://')) {
-            URL::forceScheme('https');
-        }
+         if (str_starts_with($appUrl, 'https://')) {
+             URL::forceScheme('https');
+         }
     }
 }

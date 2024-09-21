@@ -10,7 +10,7 @@ class Asistencia extends Model
     use HasFactory;
 
     protected $fillable = [
-        'padre_uuid',
+        'uuid_short', // Cambiado de padre_uuid a uuid_short
         'numero_ficha',
         'hora_entrada',
         'hora_salida',
