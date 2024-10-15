@@ -21,8 +21,10 @@
                         <thead>
                             <tr>
                                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Nombre del Padre</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Credencial</th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Teléfono</th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Red</th>
+                                <th scope="col" class="relative py-3.5 pl-3 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Correo Electronico</th>
                                 <th scope="col" class="relative py-3.5 pl-3 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">
                                     <span class="sr-only">Acciones</span>
                                 </th>
@@ -32,8 +34,12 @@
                             @foreach ($padres as $padre)
                                 <tr>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-200">{{ $padre->nombre }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $padre->uuid_short }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $padre->telefono }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $padre->red ?? 'N/A' }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                        {{ $redes[$padre->red]->descripcion ?? 'N/A' }} <!-- Aquí accedes a la descripción -->
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $padre->email ?? 'N/A' }}</td>
                                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
                                         <a href="{{ route('padres.show', $padre->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">Ver Hijos</a>
                                     </td>

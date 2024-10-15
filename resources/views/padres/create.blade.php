@@ -22,13 +22,24 @@
 
                         <div class="mb-4">
                             <label for="red" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Red</label>
-                            <input type="text" name="red" id="red" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <select name="red" id="red" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="">Seleccione una red</option>
+                                @foreach($redes as $red)
+                                    <option value="{{ $red->id }}">{{ $red->descripcion }}</option>
+                                @endforeach
+                            </select>
                         </div>
+
 
                         <div class="mb-4">
                             <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
                             <input type="text" name="telefono" id="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo Electrónico</label>
+                            <input type="email" name="email" id="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                        </div>
+
 
                         <div class="mb-4">
                             <label for="foto_padre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto del Padre</label>

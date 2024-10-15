@@ -10,7 +10,7 @@ class Padre extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'red', 'telefono', 'foto_padre', 'uuid_short'];
+    protected $fillable = ['nombre', 'red', 'telefono', 'foto_padre', 'uuid_short', 'email'];
 
     public static function boot()
     {
@@ -25,5 +25,10 @@ class Padre extends Model
     {
         return $this->hasMany(Hijo::class);
     }
-}
 
+    // Relación con el modelo Red
+    public function red()
+    {
+        return $this->belongsTo(Red::class, 'red'); // 'red' es el campo en la tabla padres que referencia a la tabla redes
+    }
+}

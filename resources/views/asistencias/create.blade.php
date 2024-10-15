@@ -18,16 +18,20 @@
                 <div id="resultContainer"></div>
 
                 <!-- Formulario para registrar la asistencia -->
-                <form id="asistenciaForm" class="mt-6" style="display: none;">
+                <form id="asistenciaForm" class="mt-6" style="display: none;" onsubmit="return false;">
                     @csrf
                     <input type="hidden" id="uuid_short_input" name="uuid_short">
 
                     <div class="mb-4" id="fichaContainer">
                         <label for="numero_ficha" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Número de Ficha</label>
-                        <input type="text" id="numero_ficha" name="numero_ficha" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <input type="text" id="numero_ficha" name="numero_ficha" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                     </div>
 
-                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Registrar Asistencia</button>
+                    <div id="hijosContainer" class="mb-4">
+                        <!-- Aquí se agregarán los campos dinámicos para cada hijo -->
+                    </div>
+
+                    <button type="submit" id="submitButton" class="bg-green-500 text-white px-4 py-2 rounded-md">Registrar Asistencia</button>
                 </form>
 
                 <!-- Alert Notification -->
@@ -88,130 +92,153 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Mostrar notificación si hay un mensaje de éxito
-            @if (session('success'))
-                document.getElementById('notification-message').textContent = "{{ session('success') }}";
-                document.getElementById('notification').classList.remove('hidden');
-                setTimeout(function() {
-                    document.getElementById('notification').classList.add('hidden');
-                }, 5000); // Ocultar después de 5 segundos
-            @endif
+            document.getElementById('asistenciaForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Evita el envío por defecto
+
+    // Obtiene los datos del formulario
+    const formData = $(this).serialize(); // Usa jQuery para serializar el formulario
+
+    // Envía los datos al servidor
+    $.ajax({
+        url: '{{ route("asistencias.store") }}', // Ruta de tu método store
+        method: 'POST',
+        data: formData,
+        success: function(response) {
+            $('#alertNotification').removeClass('hidden'); // Mostrar notificación
+            $('#alertMessage').text(response.success); // Mensaje de éxito
+            // Deshabilitar el formulario para evitar modificaciones
+            $('#asistenciaForm input, #asistenciaForm select').prop('disabled', true);
+        },
+        error: function(xhr) {
+            // Manejar errores, puedes mostrar un mensaje al usuario
+            $('#alertNotification').removeClass('hidden'); // Mostrar notificación
+            $('#alertMessage').text('Error al registrar asistencia.'); // Mensaje de error
+        }
+    });
+});
+
 
             // Manejar búsqueda por UUID
-            document.getElementById('searchButton').addEventListener('click', function () {
-                const uuid = document.getElementById('uuid_short').value;
-                $.ajax({
-                    url: '{{ route("asistencias.search") }}',
-                    method: 'GET',
-                    data: { uuid_short: uuid },
-                    success: function(response) {
-                        if (response.padre) {
-                            const padre = response.padre;
-                            $('#uuid_short_input').val(padre.uuid_short);
+           // Manejar búsqueda por UUID
+// Manejar búsqueda por UUID
+document.getElementById('searchButton').addEventListener('click', function () {
+    const uuid = document.getElementById('uuid_short').value;
+    $.ajax({
+        url: '{{ route("asistencias.search") }}',
+        method: 'GET',
+        data: { uuid_short: uuid },
+        success: function(response) {
+            // Reiniciar el formulario de asistencia al realizar una nueva búsqueda
+            $('#hijosContainer select').prop('disabled', false); // Habilitar todos los campos de asistencia
+            $('#numero_ficha').removeAttr('required'); // Quitar el atributo required
+            $('#fichaContainer').show(); // Mostrar el campo de ficha
+            $('#asistenciaForm button[type="submit"]').show(); // Mostrar el botón de registro
 
-                            // Agregar las horas de entrada y salida al HTML
-                            const resultHtml = `
-                                <div class="flex flex-col md:flex-row items-start">
-                                    <div class="md:w-1/2 md:pr-6 mb-6 md:mb-0">
-                                        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
-                                            <img class="mx-auto h-32 w-32 flex-shrink-0 mt-4" src="{{ asset('storage') }}/${padre.foto_padre}" alt="Foto del Padre">
-                                            <h3 class="text-xl font-semibold dark:text-gray-200">${padre.nombre}</h3>
-                                        <p class="text-gray-600 dark:text-gray-400">Red: ${padre.red || 'N/A'}</p>
-                                        <p class="text-gray-600 dark:text-gray-400">Teléfono: ${padre.telefono}</p>
-                                        <p class="text-gray-600 dark:text-gray-400">Hora de Entrada: ${padre.hora_entrada || 'No registrado'}</p>
-                                        <p class="text-gray-600 dark:text-gray-400">Hora de Entrega: ${padre.hora_salida || 'No registrado'}</p>
-                                    </div>
-                                </div>
-                                <div class="md:w-1/2">
-                                    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
-                                        <h4 class="text-lg font-semibold dark:text-gray-200 mt-4">Hijos:</h4>
-                                        <ul class="list-disc ml-5">
-                                            ${padre.hijos.map(hijo => `<li class="text-gray-600 dark:text-gray-400">${hijo.nombre} (${hijo.edad} años)</li>`).join('')}
-                                        </ul>
-                                    </div>
-                                </div>
+            if (response.padre) {
+                const padre = response.padre;
+                $('#uuid_short_input').val(padre.uuid_short);
+
+                // Generar HTML para la asistencia de los hijos
+                let hijosHtml = '';
+                padre.hijos.forEach((hijo, index) => {
+                    const asistenciaHijo = padre.hijos_asistencia[hijo.nombre] || '';
+                    hijosHtml += `
+                        <div class="mb-4">
+                            <label for="hijo_${index}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">${hijo.nombre} (${hijo.edad} años)</label>
+                            <select id="hijo_${index}" name="hijos_asistencia[${hijo.nombre}]" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                <option value="asistio" ${asistenciaHijo === 'asistio' ? 'selected' : ''}>Asistió</option>
+                                <option value="no_asistio" ${asistenciaHijo === 'no_asistio' ? 'selected' : ''}>No asistió</option>
+                            </select>
+                        </div>
+                    `;
+                });
+
+                // Agregar las horas de entrada y salida al HTML
+                const resultHtml = `
+                    <div class="flex flex-col md:flex-row items-start">
+                        <div class="md:w-1/2 md:pr-6 mb-6 md:mb-0">
+                            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
+                                <img class="mx-auto h-32 w-32 flex-shrink-0 mt-4" src="{{ asset('storage') }}/${padre.foto_padre}" alt="Foto del Padre">
+                                <h3 class="text-xl font-semibold dark:text-gray-200">${padre.nombre}</h3>
+                                <p class="text-gray-600 dark:text-gray-400">Red: ${padre.red || 'N/A'}</p>
+                                <p class="text-gray-600 dark:text-gray-400">Teléfono: ${padre.telefono}</p>
+                                <p class="text-gray-600 dark:text-gray-400">Hora de Entrada: ${padre.hora_entrada || 'No registrado'}</p>
+                                <p class="text-gray-600 dark:text-gray-400">Hora de Entrega: ${padre.hora_salida || 'No registrado'}</p>
                             </div>
-                        `;
-                        $('#resultContainer').html(resultHtml);
+                        </div>
+                        <div class="md:w-1/2">
+                            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4">
+                                <h4 class="text-lg font-semibold dark:text-gray-200 mt-4">Hijos:</h4>
+                                <ul class="list-disc ml-5">
+                                    ${padre.hijos.map(hijo => `<li class="text-gray-600 dark:text-gray-400">${hijo.nombre} (${hijo.edad} años)</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
 
-                        // Mostrar el formulario de asistencia
-                        $('#asistenciaForm').show();
+                $('#resultContainer').html(resultHtml);
+                $('#hijosContainer').html(hijosHtml);  // Añadir los campos generados al contenedor
 
-                        // Verificar si ya tiene entrada registrada
-                        if (padre.hora_entrada) {
-                            $('#fichaContainer').hide(); // Ocultar campo de ficha
+                // Mostrar el formulario de asistencia
+                $('#asistenciaForm').show();
 
-                            // Mostrar el alert en lugar del popup
-                            if (padre.hora_salida) {
-                                $('#alertNotification').removeClass('hidden');
-                                $('#asistenciaForm button[type="submit"]').hide(); // Ocultar el botón de registro
+                // Verificar si ya tiene entrada registrada
+                if (padre.hora_entrada) {
+                    $('#fichaContainer').hide(); // Ocultar campo de ficha
+                    $('#numero_ficha').removeAttr('required'); // Quitar el atributo required
 
-                                // Configurar el temporizador para ocultar el alert después de 5 segundos
-                                setTimeout(function() {
-                                    $('#alertNotification').addClass('hidden');
-                                }, 5000); // Ocultar después de 5 segundos
-                            } else {
-                                $('#alertNotification').addClass('hidden');
-                                $('#asistenciaForm button[type="submit"]').show(); // Mostrar el botón de registro si no hay hora_salida
-                            }
+                    // Mostrar el alert en lugar del popup
+                    if (padre.hora_salida) {
+                        $('#alertNotification').removeClass('hidden');
+                        $('#asistenciaForm button[type="submit"]').hide(); // Ocultar el botón de registro
 
-                        } else {
-                            $('#fichaContainer').show(); // Mostrar campo de ficha si no tiene entrada
-                            $('#asistenciaForm button[type="submit"]').show();
-                        }
+                        // Bloquear campos de asistencia
+                        $('#hijosContainer select').prop('disabled', true);
+
+                        // Configurar el temporizador para ocultar el alert después de 5 segundos
+                        setTimeout(function() {
+                            $('#alertNotification').addClass('hidden');
+                        }, 5000); // Ocultar después de 5 segundos
                     } else {
-                        $('#resultContainer').html('<p class="text-red-500">No se encontró un padre con ese UUID.</p>');
-                        $('#asistenciaForm').hide(); // Ocultar el formulario si no se encuentra el padre
+                        $('#alertNotification').addClass('hidden');
+                        $('#asistenciaForm button[type="submit"]').show(); // Mostrar el botón de registro si no hay hora_salida
                     }
-                },
-                error: function(xhr) {
-                    $('#resultContainer').html('<p class="text-red-500">Error al buscar los datos. Inténtalo de nuevo.</p>');
-                    $('#asistenciaForm').hide(); // Ocultar el formulario en caso de error
+                } else {
+                    $('#fichaContainer').show(); // Mostrar campo de ficha si no tiene entrada
+                    $('#numero_ficha').attr('required', true); // Asegurarse de que el campo esté requerido
+                    $('#asistenciaForm button[type="submit"]').show();
                 }
-            });
-        });
-
-        // Manejar el cierre del alert con la "X"
-        document.getElementById('closeAlert').addEventListener('click', function() {
-            document.getElementById('alertNotification').classList.add('hidden');
-        });
-
-        // Manejar el cierre de la notificación
-        document.getElementById('close-notification').addEventListener('click', function() {
-            document.getElementById('notification').classList.add('hidden');
-        });
-
-        // Manejar el envío del formulario con AJAX
-        document.getElementById('asistenciaForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-
-            // Verificar si el campo numero_ficha está vacío y eliminarlo si es el caso
-            if (!document.getElementById('numero_ficha').value) {
-                formData.delete('numero_ficha');
+            } else {
+                $('#resultContainer').html('<p class="text-red-500">No se encontró un padre con ese UUID.</p>');
+                $('#asistenciaForm').hide(); // Ocultar el formulario si no se encuentra el padre
             }
+        }
+    });
+});
 
-            $.ajax({
-                url: '{{ route("asistencias.store") }}',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    document.getElementById('notification-message').textContent = "Asistencia registrada exitosamente!";
-                    document.getElementById('notification').classList.remove('hidden');
-                    setTimeout(function() {
-                        document.getElementById('notification').classList.add('hidden');
-                    }, 5000); // Ocultar después de 5 segundos
-                    // Limpiar el formulario después del éxito
-                    $('#asistenciaForm')[0].reset();
-                    $('#asistenciaForm').hide();
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
-                    alert('Error al registrar la asistencia.');
-                }
+
+
+            // Cerrar la notificación
+            document.getElementById('close-notification').addEventListener('click', function() {
+                document.getElementById('notification').classList.add('hidden');
+            });
+
+            // Cerrar la alerta
+            document.getElementById('closeAlert').addEventListener('click', function() {
+                $('#alertNotification').addClass('hidden');
+            });
+
+            // Manejar el envío del formulario
+            document.getElementById('asistenciaForm').addEventListener('submit', function () {
+                // Aquí podrías hacer el envío del formulario si es necesario
+                alert('Asistencia registrada.');
+
+                // Bloquear todos los campos del formulario
+                $('#asistenciaForm input, #asistenciaForm select').prop('disabled', true);
+                $('#alertNotification').removeClass('hidden'); // Mostrar notificación
+                $('#alertMessage').text('Asistencia registrada y bloqueada para modificaciones.'); // Mensaje de alerta
             });
         });
-    });
-</script>
+    </script>
 </x-app-layout>

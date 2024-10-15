@@ -32,16 +32,17 @@
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @foreach ($servicios as $servicio)
                                 <tr>
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-200">{{ $servicios->descripcion_servicio }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicios->horario_servicio }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicios->fecha_servicio }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicios->activo ? 'Si' : 'No' }}</td>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-200">{{ $servicio->descripcion_servicio }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicio->horario_servicio }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicio->fecha_servicio }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicio->activo ? 'Si' : 'No' }}</td>
                                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
-                                        <a href="{{ route('servicios.show', $servicios->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">Ver Servicio</a>
+                                        <a href="{{ route('servicios.show', $servicio->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">Ver Servicio</a>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
+
                     </table>
                 </div>
             </div>

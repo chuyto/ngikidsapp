@@ -5,6 +5,7 @@ use App\Http\Controllers\PadreController;
 use App\Http\Controllers\HijoController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\RedController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,6 +24,7 @@ Route::middleware([
     // Definición de las rutas para padres e hijos
     Route::resource('padres', PadreController::class);
     Route::resource('servicios', ServicioController::class);
+    Route::resource('redes', RedController::class);
 
     Route::get('/asistencias/create', [AsistenciaController::class, 'create'])->name('asistencias.create');
     Route::post('/asistencias/store', [AsistenciaController::class, 'store'])->name('asistencias.store');

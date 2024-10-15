@@ -15,4 +15,6 @@ class Servicio extends Model
         'activo',
         // Otros campos que puedas tener
     ];
+
+
 }

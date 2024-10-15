@@ -10,11 +10,17 @@ class Asistencia extends Model
     use HasFactory;
 
     protected $fillable = [
-        'uuid_short', // Cambiado de padre_uuid a uuid_short
+        'uuid_short',
         'numero_ficha',
         'hora_entrada',
         'hora_salida',
-        // Otros campos que puedas tener
+        'hijos_asistencia',
+        'servicio_id'  // Agregamos el nuevo campo
+    ];
+
+    // Cast para trabajar con el campo como JSON
+    protected $casts = [
+        'hijos_asistencia' => 'array', // Cast para el campo JSON
     ];
 
     // Mutador para formatear la hora de entrada
@@ -28,6 +34,5 @@ class Asistencia extends Model
     {
         return $value ? \Carbon\Carbon::parse($value)->format('H:i:s') : null;
     }
-
-    // Puedes agregar otros métodos o relaciones si es necesario
 }
+
