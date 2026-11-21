@@ -1,259 +1,137 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-mark class="block h-9 w-auto" />
-                    </a>
-                </div>
+<div class="flex flex-col flex-1 min-h-0">
+    <nav class="px-4 py-4 space-y-1 flex-grow overflow-y-auto no-scrollbar">
+        <p class="px-2 mb-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-400">
+            Menú Principal
+        </p>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('padres.index') }}" :active="request()->routeIs('padres.index')">
-                        {{ __('Registro') }}
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('asistencias.create') }}" :active="request()->routeIs('asistencias.create')">
-                        {{ __('Asistencia') }}
-                    </x-nav-link>
+        {{-- Registro --}}
+        @can('padres.ver')
+        <a href="{{ route('padres.index') }}"
+           class="nav-item {{ request()->routeIs('padres.*') ? 'nav-item-active' : '' }}">
+            <i class="fa-solid fa-address-book w-5 text-center text-base"></i>
+            <span>Registro</span>
+        </a>
+        @endcan
 
-                    <div class="hidden sm:flex sm:items-center sm:ms-6">
-                        <div class="ms-3 relative">
-                            <x-dropdown align="right" width="48">
-                                <x-slot name="trigger">
-                                    <span class="inline-flex rounded-md">
-                                        <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
-                                            Catalogos
-                                            <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                            </svg>
-                                        </button>
-                                    </span>
-                                </x-slot>
-                                <x-slot name="content">
-                                    <div class="w-60">
+        {{-- Asistencia --}}
+        @can('asistencias.crear')
+        <a href="{{ route('asistencias.create') }}"
+           class="nav-item {{ request()->routeIs('asistencias.create') ? 'nav-item-active' : '' }}">
+            <i class="fa-solid fa-clipboard-check w-5 text-center text-base"></i>
+            <span>Asistencia</span>
+        </a>
+        @endcan
 
-                                        <x-dropdown-link href="{{ route('servicios.index') }}" class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            {{ __('Servicios') }}
-                                        </x-dropdown-link>
-                                        <x-dropdown-link href="{{ route('redes.index') }}" class="hover:bg-gray-100 dark:hover:bg-gray-700">
-                                            {{ __('Redes') }}
-                                        </x-dropdown-link>
-                                    </div>
-                                </x-slot>
-                            </x-dropdown>
+        {{-- Reportes --}}
+        @can('reportes.ver')
+        <a href="{{ route('reportes.index') }}"
+           class="nav-item {{ request()->routeIs('reportes.*') ? 'nav-item-active' : '' }}">
+            <i class="fa-solid fa-chart-column w-5 text-center text-base"></i>
+            <span>Reportes</span>
+        </a>
+        @endcan
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <!-- Teams Dropdown -->
-                @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                    <div class="ms-3 relative">
-                        <x-dropdown align="right" width="60">
-                            <x-slot name="trigger">
-                                <span class="inline-flex rounded-md">
-                                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
-                                        {{ Auth::user()->currentTeam->name }}
-
-                                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                                        </svg>
-                                    </button>
-                                </span>
-                            </x-slot>
-
-                            <x-slot name="content">
-                                <div class="w-60">
-                                    <!-- Team Management -->
-                                    <div class="block px-4 py-2 text-xs text-gray-400">
-                                        {{ __('Manage Team') }}
-                                    </div>
-
-                                    <!-- Team Settings -->
-                                    <x-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
-                                        {{ __('Team Settings') }}
-                                    </x-dropdown-link>
-
-                                    @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                        <x-dropdown-link href="{{ route('teams.create') }}">
-                                            {{ __('Create New Team') }}
-                                        </x-dropdown-link>
-                                    @endcan
-
-                                    <!-- Team Switcher -->
-                                    @if (Auth::user()->allTeams()->count() > 1)
-                                        <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                                        <div class="block px-4 py-2 text-xs text-gray-400">
-                                            {{ __('Switch Teams') }}
-                                        </div>
-
-                                        @foreach (Auth::user()->allTeams() as $team)
-                                            <x-switchable-team :team="$team" />
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </x-slot>
-                        </x-dropdown>
-                    </div>
-                @endif
-
-                <!-- Settings Dropdown -->
-               <!-- Settings Dropdown -->
-<div class="ms-3 relative">
-    <x-dropdown align="right" width="48">
-        <x-slot name="trigger">
-            @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                    <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
-                </button>
-            @else
-                <span class="inline-flex rounded-md">
-                    <!-- Nombre de usuario -->
-                    <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
-                        {{ Auth::user()->name }}
-
-                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-
-                    <!-- Badge del servicio activo -->
-                    @if($servicioActivo)
-                        <span class="inline-flex items-center px-3 py-1 ms-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            {{ $servicioActivo->descripcion_servicio }}
-                        </span>
-                    @else
-                        <span class="inline-flex items-center px-3 py-1 ms-2 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                            No hay servicios activos
-                        </span>
-                    @endif
+        {{-- Catálogos --}}
+        @if(auth()->user()->can('servicios.ver') || auth()->user()->can('redes.ver') || auth()->user()->can('supervisores.ver'))
+        <div x-data="{ open: {{ request()->routeIs('servicios.*', 'redes.*', 'supervisores.*') ? 'true' : 'false' }} }">
+            <button @click="open = !open"
+                    class="nav-item w-full justify-between">
+                <span class="flex items-center gap-3">
+                    <i class="fa-solid fa-book-open w-5 text-center text-base"></i>
+                    <span>Catálogos</span>
                 </span>
-            @endif
-        </x-slot>
-
-        <x-slot name="content">
-            <!-- Account Management and other dropdown items go here -->
-        </x-slot>
-    </x-dropdown>
-</div>
-
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                <i :class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fa-solid text-xs text-slate-400 transition-transform"></i>
+            </button>
+            <div x-show="open" x-transition class="ml-9 mt-1 space-y-1 border-l-2 border-brand-100 pl-4">
+                @can('servicios.ver')
+                <a href="{{ route('servicios.index') }}"
+                   class="block rounded-xl px-3 py-2 text-sm font-semibold transition-colors duration-200 cursor-pointer {{ request()->routeIs('servicios.*') ? 'text-brand-600 bg-brand-50' : 'text-slate-500 hover:text-brand-600 hover:bg-slate-50' }}">
+                    <i class="fa-solid fa-calendar-days mr-2"></i>Servicios
+                </a>
+                @endcan
+                @can('redes.ver')
+                <a href="{{ route('redes.index') }}"
+                   class="block rounded-xl px-3 py-2 text-sm font-semibold transition-colors duration-200 cursor-pointer {{ request()->routeIs('redes.*') ? 'text-brand-600 bg-brand-50' : 'text-slate-500 hover:text-brand-600 hover:bg-slate-50' }}">
+                    <i class="fa-solid fa-circle-nodes mr-2"></i>Redes
+                </a>
+                @endcan
+                @can('supervisores.ver')
+                <a href="{{ route('supervisores.index') }}"
+                   class="block rounded-xl px-3 py-2 text-sm font-semibold transition-colors duration-200 cursor-pointer {{ request()->routeIs('supervisores.*') ? 'text-brand-600 bg-brand-50' : 'text-slate-500 hover:text-brand-600 hover:bg-slate-50' }}">
+                    <i class="fa-solid fa-user-shield mr-2"></i>Supervisores
+                </a>
+                @endcan
             </div>
         </div>
-    </div>
+        @endif
 
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('servicios.index') }}" :active="request()->routeIs('servicios.index')">
-                {{ __('Servicios') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('padres.index') }}" :active="request()->routeIs('padres.index')">
-                {{ __('Registros') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('asistencias.create') }}" :active="request()->routeIs('asistencias.create')">
-                {{ __('Asistencia') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link href="{{ route('redes.index') }}" :active="request()->routeIs('redes.index')">
-                {{ __('Redes') }}
-            </x-responsive-nav-link>
-        </div>
+        {{-- Usuarios --}}
+        @can('usuarios.ver')
+        <a href="{{ route('usuarios.index') }}"
+           class="nav-item {{ request()->routeIs('usuarios.*') ? 'nav-item-active' : '' }}">
+            <i class="fa-solid fa-user-gear w-5 text-center text-base"></i>
+            <span>Usuarios</span>
+        </a>
+        @endcan
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="flex items-center px-4">
-                @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                    <div class="shrink-0 me-3">
-                        <img class="h-10 w-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
-                    </div>
-                @endif
+        {{-- Auditoría --}}
+        @can('auditoria.ver')
+        <a href="{{ route('auditoria.index') }}"
+           class="nav-item {{ request()->routeIs('auditoria.*') ? 'nav-item-active' : '' }}">
+            <i class="fa-solid fa-clipboard-list w-5 text-center text-base"></i>
+            <span>Auditoría</span>
+        </a>
+        @endcan
 
-                <div>
-                    <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                    <!-- Badge del servicio activo -->
-                    @if($servicioActivo)
-                        <span class="inline-flex items-center px-3 py-1 mt-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                            {{ $servicioActivo->descripcion_servicio }}
-                        </span>
-                    @else
-                        <span class="inline-flex items-center px-3 py-1 mt-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                            No hay servicios activos
-                        </span>
-                    @endif
+        {{-- Ayuda --}}
+        <a href="{{ route('ayuda') }}"
+           class="nav-item {{ request()->routeIs('ayuda') ? 'nav-item-active' : '' }}">
+            <i class="fa-solid fa-circle-question w-5 text-center text-base"></i>
+            <span>Ayuda</span>
+        </a>
+    </nav>
+
+    {{-- Footer fijado al fondo del sidebar --}}
+    <footer class="px-4 pb-5 pt-4 border-t border-white/60 bg-white/40 backdrop-blur-xl flex-shrink-0">
+        @if($servicioActivo)
+            <div class="mb-4 flex items-center gap-3 rounded-2xl bg-brand-50 border border-brand-100 px-4 py-3">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <div class="min-w-0">
+                    <p class="text-[9px] font-extrabold uppercase text-brand-400 tracking-widest">Servicio Activo</p>
+                    <p class="text-xs font-bold text-slate-700 truncate">{{ $servicioActivo->descripcion_servicio }}</p>
                 </div>
             </div>
+        @endif
 
-            <div class="mt-3 space-y-1">
-                <!-- Account Management -->
-                <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
+        <div x-data="{ userMenu: false }" class="relative">
+            <button @click="userMenu = !userMenu" class="flex items-center w-full gap-3 p-2 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer">
+                <div class="h-10 w-10 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-extrabold">
+                    {{ mb_substr(Auth::user()->name, 0, 1) }}
+                </div>
+                <div class="flex-grow text-left">
+                    <p class="text-sm font-bold text-slate-800 truncate">{{ Auth::user()->name }}</p>
+                    <p class="text-[10px] font-semibold text-slate-400">{{ Auth::user()->getRoleNames()->first() ?? 'Sin rol' }}</p>
+                </div>
+                <i class="fa-solid fa-ellipsis-vertical text-slate-400 text-sm"></i>
+            </button>
 
-                @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                    <x-responsive-nav-link href="{{ route('api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
-                        {{ __('API Tokens') }}
-                    </x-responsive-nav-link>
-                @endif
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}" x-data>
+            <div x-show="userMenu" @click.away="userMenu = false" x-transition
+                 class="absolute bottom-full left-0 w-full mb-3 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden py-2 z-40">
+                <a href="{{ route('profile.show') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer">
+                    <i class="fa-solid fa-user text-slate-400 w-4 text-center"></i> Mi Perfil
+                </a>
+                <hr class="my-1 border-slate-100">
+                <form method="POST" action="{{ route('logout') }}"
+                      onsubmit="navigator.serviceWorker?.controller?.postMessage({ type: 'CLEAR_CACHES' })">
                     @csrf
-
-                    <x-responsive-nav-link href="{{ route('logout') }}"
-                                       @click.prevent="$root.submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                    <button type="submit" class="flex items-center w-full gap-3 px-4 py-2.5 text-sm font-bold text-brand-600 hover:bg-brand-50 cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-4 text-center"></i> Cerrar Sesión
+                    </button>
                 </form>
-
-                <!-- Team Management -->
-                @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                    <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                    <div class="block px-4 py-2 text-xs text-gray-400">
-                        {{ __('Manage Team') }}
-                    </div>
-
-                    <!-- Team Settings -->
-                    <x-responsive-nav-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}" :active="request()->routeIs('teams.show')">
-                        {{ __('Team Settings') }}
-                    </x-responsive-nav-link>
-
-                    @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                        <x-responsive-nav-link href="{{ route('teams.create') }}" :active="request()->routeIs('teams.create')">
-                            {{ __('Create New Team') }}
-                        </x-responsive-nav-link>
-                    @endcan
-
-                    <!-- Team Switcher -->
-                    @if (Auth::user()->allTeams()->count() > 1)
-                        <div class="border-t border-gray-200 dark:border-gray-600"></div>
-
-                        <div class="block px-4 py-2 text-xs text-gray-400">
-                            {{ __('Switch Teams') }}
-                        </div>
-
-                        @foreach (Auth::user()->allTeams() as $team)
-                            <x-switchable-team :team="$team" component="responsive-nav-link" />
-                        @endforeach
-                    @endif
-                @endif
             </div>
         </div>
-    </div>
-
-</nav>
+    </footer>
+</div>

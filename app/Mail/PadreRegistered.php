@@ -4,11 +4,11 @@ namespace App\Mail;
 
 use App\Models\Padre;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PadreRegistered extends Mailable
+class PadreRegistered extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -17,7 +17,6 @@ class PadreRegistered extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param Padre $padre
      * @return void
      */
     public function __construct(Padre $padre)
@@ -33,6 +32,6 @@ class PadreRegistered extends Mailable
     public function build()
     {
         return $this->subject('Credencial de Acceso para Registro de Asistencia')
-                    ->view('emails.padre_registered');
+            ->view('emails.padre_registered');
     }
 }

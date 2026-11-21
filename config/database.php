@@ -47,7 +47,10 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
+            // En Wasmer Edge la BD gestionada se inyecta como DB_NAME
+            // (disponible tambien en after_deploy); DB_DATABASE queda
+            // como alternativa manual/local.
+            'database' => env('DB_NAME', env('DB_DATABASE', 'laravel')),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
@@ -58,8 +61,13 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA') ?: null,
+                PDO::MYSQL_ATTR_SSL_CERT => env('MYSQL_ATTR_SSL_CERT') ?: null,
+                PDO::MYSQL_ATTR_SSL_KEY => env('MYSQL_ATTR_SSL_KEY') ?: null,
+                PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('MYSQL_ATTR_SSL_VERIFY_SERVER_CERT') !== null
+                    ? filter_var(env('MYSQL_ATTR_SSL_VERIFY_SERVER_CERT'), FILTER_VALIDATE_BOOLEAN)
+                    : null,
+            ], fn ($value) => $value !== null) : [],
         ],
 
         'mariadb' => [
@@ -67,7 +75,8 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'laravel'),
+            // Igual que mysql: DB_NAME (inyectada por Wasmer) primero.
+            'database' => env('DB_NAME', env('DB_DATABASE', 'laravel')),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),

@@ -1,0 +1,27 @@
+# Dependencias locales
+node_modules
+npm-debug.log
+
+# Archivos de Vite y Compilación
+public/hot
+public/build
+
+# Configuración y Secretos
+.env
+.env.backup
+.git
+.gitignore
+
+# Caché y Logs de Laravel
+storage/*.key
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*.php
+bootstrap/cache/*.php
+
+# Archivos de Sistema/Editores
+.DS_Store
+.idea
+.vscode

@@ -1,44 +1,31 @@
 <x-app-layout>
+    {{-- Header del Componente --}}
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Crear Red') }}
-        </h2>
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-brand-100 text-brand-600 rounded-2xl">
+                <i class="fa-solid fa-users text-xl"></i>
+            </div>
+            <div>
+                <h2 class="page-title leading-tight">{{ __('Crear Nueva Red') }}</h2>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">
+                    Configuración · Nueva Clasificación
+                </p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
-                    <div class="flex flex-col">
-                        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                <div class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg">
-                                    <form action="{{ route('redes.store') }}" method="POST">
-                                        @csrf
-                                        <div class="p-6 bg-white dark:bg-gray-800">
-                                            <div class="flex flex-col">
-                                                <div class="w-full">
-                                                    <label for="descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                        Red
-                                                    </label>
-                                                    <div class="mt-1">
-                                                        <input id="descripcion" type="text" name="descripcion" class="block w-full shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-indigo-500 focus:border-indigo  sm:text-sm border-gray-300 rounded-md" placeholder="Descripción">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center justify-end">
-                                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                Registrar
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                 </div>
+    <div class="max-w-3xl mx-auto">
+        <div class="card overflow-hidden">
+            <div class="p-8 border-b border-slate-100 flex items-center">
+                <div class="p-3 bg-brand-50 rounded-2xl border border-brand-100 text-brand-500">
+                    <i class="fa-solid fa-circle-plus text-2xl"></i>
+                </div>
+                <div class="ml-5">
+                    <h3 class="font-heading text-xl text-slate-900">Nueva Categoría de Red</h3>
+                    <p class="text-sm font-semibold text-slate-500">Registre un nuevo grupo para organizar a los padres y servicios.</p>
+                </div>
             </div>
+            @include('redes._form')
         </div>
     </div>
 </x-app-layout>

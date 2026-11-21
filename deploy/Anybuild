@@ -1,0 +1,50 @@
+# Anybuild para ngikidsapp en Wasmer Edge (flujo "Deploy from upload").
+# Este archivo va en la RAIZ de la carpeta que subas (el script
+# Build-WasmerDeploy.ps1 lo copia a wasmer-upload/).
+# Sin este archivo, el backend autodetecta "static site" y el build falla.
+# Con este archivo, Anybuild usa el provider Laravel: instala PHP 8.4 +
+# Composer + Node, corre composer install, npm install + npm run build,
+# y sirve con php -S. Las migraciones+seeders corren con after_deploy
+# (ahi ya existe la BD gestionada y las env inyectadas).
+# Adaptado de un deploy Laravel funcional en Wasmer (Anybuild v0.28.4).
+
+load("//anybuild/tools:laravel.bzl", "laravel_build", "laravel_config", "laravel_serve")
+
+config = laravel_config(
+    schema = 1,
+    node_package_manager = "npm",
+    node_build_command = "npm run build",
+    node_version = "24",
+    php_framework = "laravel",
+    composer_enable = True,
+    composer_build_script = "post-update-cmd",
+    php_version = "8.4",
+    php_public_dir = "public",
+    # Migra + siembra (roles, permisos, admin). Es idempotente y corre
+    # despues del deploy, con DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/
+    # DB_PASSWORD ya inyectados. Requiere ADMIN_* en Secrets.
+    commands = {"after_deploy": "php artisan migrate --force --seed"},
+)
+
+build = laravel_build(config)
+
+# Poda post-build: la imagen runtime solo necesita el codigo + vendor/
+# + public/build. Sin esto se supera el limite de memoria en export.
+build_post = [
+    run("rm -rf node_modules", group = "prune"),
+    run("rm -rf tests", group = "prune"),
+    run(
+        "rm -f storage/logs/*.log storage/framework/cache/data/* storage/framework/sessions/* storage/framework/views/*",
+        group = "prune",
+    ),
+    # Nunca subir caches con rutas absolutas del entorno de build.
+    run("rm -f bootstrap/cache/*.php", group = "prune"),
+]
+
+laravel_serve(
+    config,
+    build,
+    name = "ngikidsapp",
+    build_post = build_post,
+    extra_commands = {"after_deploy": "php artisan migrate --force --seed"},
+)

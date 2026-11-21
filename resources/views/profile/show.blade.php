@@ -1,12 +1,22 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+                <div class="p-2.5 bg-brand-100 text-brand-600 rounded-2xl">
+                    <i class="fa-solid fa-id-card text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="page-title leading-tight">{{ __('Mi Perfil') }}</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">
+                        Cuenta · Configuración personal
+                    </p>
+                </div>
+            </div>
+        </div>
     </x-slot>
 
     <div>
-        <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8 space-y-8">
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())
                 @livewire('profile.update-profile-information-form')
 

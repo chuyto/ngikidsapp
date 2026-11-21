@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'walletwallet' => [
+        'key' => env('WALLETWALLET_API_KEY'),
+        'url' => 'https://api.walletwallet.dev/api',
+    ],
+
 ];

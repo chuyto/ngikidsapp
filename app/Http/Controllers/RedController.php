@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Red;
+use App\Services\ReportePdfCache;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 
 class RedController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $redes = Red::all();
+        $perPage = in_array((int) $request->input('per_page', 15), [15, 30, 50], true) ? (int) $request->input('per_page', 15) : 15;
+        $redes = Red::query()
+            ->when($request->filled('search'), fn ($query) => $query->where('descripcion', 'like', '%'.$request->search.'%'))
+            ->orderBy('descripcion')->paginate($perPage)->withQueryString();
+
         return view('redes.index', compact('redes'));
     }
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -48,7 +51,7 @@ class RedController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return redirect()->route('redes.index');
     }
 
     /**
@@ -58,6 +61,7 @@ class RedController extends Controller
     {
         //
         $rede = Red::findOrFail($id);
+
         return view('redes.edit', compact('rede'));
     }
 
@@ -73,8 +77,9 @@ class RedController extends Controller
 
         $rede = Red::findOrFail($id);
         $rede->update($validatedData);
+        app(ReportePdfCache::class)->flush();
 
-        return response()->json($rede); // Devolver JSON con el servicio actualizado
+        return redirect()->route('redes.index')->with('success', 'Red actualizada correctamente.');
     }
 
     /**
@@ -82,10 +87,18 @@ class RedController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         $rede = Red::findOrFail($id);
-        $rede->delete();
 
-        return response()->json(['message' => 'Red eliminado exitosamente.'], 200);
+        try {
+            $rede->delete();
+            app(ReportePdfCache::class)->flush();
+        } catch (QueryException $e) {
+            \Log::warning('No se pudo eliminar la red '.$id.': '.$e->getMessage());
+
+            return redirect()->route('redes.index')
+                ->with('error', 'No se puede eliminar la red porque tiene familias asignadas.');
+        }
+
+        return redirect()->route('redes.index')->with('success', 'Red eliminada correctamente.');
     }
 }

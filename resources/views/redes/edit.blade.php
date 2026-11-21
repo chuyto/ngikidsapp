@@ -1,44 +1,62 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Editar red') }}
-        </h2>
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-brand-100 text-brand-600 rounded-2xl">
+                <i class="fa-solid fa-users text-xl"></i>
+            </div>
+            <div>
+                <h2 class="page-title leading-tight">{{ __('Editar Red') }}</h2>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">
+                    Configuración · Actualizar Clasificación
+                </p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 bg-white dark:bg-gray-800 rounded-lg">
-                    <div class="flex flex-col">
-                        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                                <div class="shadow overflow-hidden border-b border-gray-200 dark:border-gray-700 sm:rounded-lg">
-                                    <form action="{{ route('redes.update', $rede->id) }}" method="POST">
-                                        @csrf
-                                        <div class="p-6 bg-white dark:bg-gray-800">
-                                            <div class="flex flex-col">
-                                                <div class="w-full">
-                                                    <label for="descripcion" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                        Red
-                                                    </label>
-                                                    <div class="mt-1">
-                                                        <input id="descripcion" type="text" name="descripcion" class="block w-full shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md" placeholder="Descripción" value="{{ $rede->descripcion }}">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center justify-end">
-                                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                Actualizar
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="max-w-3xl mx-auto">
+        <div class="card overflow-hidden">
+
+            {{-- Header Superior --}}
+            <div class="p-8 border-b border-slate-100 flex items-center">
+                <div class="p-3 bg-brand-50 rounded-2xl border border-brand-100 text-brand-500">
+                    <i class="fa-solid fa-pen text-2xl"></i>
+                </div>
+                <div class="ml-5">
+                    <h3 class="font-heading text-xl text-slate-900">Modificar Detalles</h3>
+                    <p class="text-sm font-semibold text-slate-500">Cambie el nombre o descripción de la red seleccionada.</p>
                 </div>
             </div>
+
+            <form action="{{ route('redes.update', $rede->id) }}" method="POST" class="p-8 space-y-8">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label for="descripcion" class="label">Nombre de la Red</label>
+                    <input id="descripcion" type="text" name="descripcion"
+                           class="input"
+                           placeholder="Nombre de la red"
+                           value="{{ old('descripcion', $rede->descripcion) }}" required autofocus>
+                    <p class="mt-2 text-xs font-semibold text-slate-400 italic">
+                        Este cambio se reflejará inmediatamente en todos los padres asociados.
+                    </p>
+                </div>
+
+                @error('descripcion')
+                    <p class="text-sm font-bold text-brand-600">{{ $message }}</p>
+                @enderror
+
+                {{-- Footer de Acciones --}}
+                <div class="flex items-center justify-between pt-8 border-t border-slate-100">
+                    <a href="{{ route('redes.index') }}" class="text-xs font-black text-slate-400 hover:text-slate-600 transition uppercase tracking-widest">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn-primary px-8 py-3">
+                        <i class="fa-solid fa-rotate"></i>
+                        ACTUALIZAR DATOS
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </x-app-layout>

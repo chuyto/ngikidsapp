@@ -65,7 +65,31 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => env('APP_TIMEZONE', 'America/Mexico_City'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Versión del Aviso de Privacidad
+    |--------------------------------------------------------------------------
+    |
+    | Se guarda junto con la fecha/IP del consentimiento para poder demostrar
+    | qué versión aceptó cada familia. Súbela al cambiar el aviso.
+    |
+    */
+
+    'privacidad_version' => env('PRIVACIDAD_VERSION', '2026-11'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Proxies de confianza
+    |--------------------------------------------------------------------------
+    |
+    | Se lee desde configuración (no con env() directo en bootstrap/app.php)
+    | para que el valor sobreviva a `php artisan config:cache`.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES', '*'),
 
     /*
     |--------------------------------------------------------------------------
@@ -78,11 +102,11 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'es'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'es_MX'),
 
     /*
     |--------------------------------------------------------------------------

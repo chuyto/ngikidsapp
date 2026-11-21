@@ -1,66 +1,143 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NGI Kids
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de registro y control de asistencia para el ministerio de niños **NGI Kids**.
+Construido con Laravel 11, Livewire 3, Jetstream 5, Tailwind CSS y Font Awesome.
 
-## About Laravel
+## Requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+ (probado en 8.4.8)
+- Composer
+- Node.js + npm (para Tailwind/Vite)
+- MySQL
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalación
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+# Dependencias
+composer install
+npm install
 
-## Learning Laravel
+# Entorno
+cp .env.example .env
+php artisan key:generate
+# Configura en .env: DB_*, MAIL_*, CLOUDINARY_*, ADMIN_EMAIL, ADMIN_PASSWORD
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# Base de datos y seeders
+php artisan migrate
+php artisan db:seed --class=RolePermissionSeeder
+php artisan db:seed --class=AdminUserSeeder
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Compilar assets
+npm run build
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Inicia con `php artisan serve` y un worker de cola en una terminal aparte:
 
-## Laravel Sponsors
+```bash
+php artisan queue:work
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Usuarios y permisos
 
-### Premium Partners
+El sistema usa `spatie/laravel-permission` con permisos en formato `modulo.accion`.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Roles
 
-## Contributing
+| Rol | Permisos |
+|-----|----------|
+| **Administrador** | Todos (35) |
+| **Operador** | Ver/crear/editar en padres, hijos, asistencias y redes; ver reportes y catálogos; SIN eliminar ni acceso al módulo de usuarios |
+| **Lectura** | Solo acciones de `ver` en todos los módulos |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Estructura de permisos
 
-## Code of Conduct
+Los 35 permisos cubren 9 módulos (`padres`, `hijos`, `asistencias`,
+`reportes`, `servicios`, `redes`, `supervisores`, `usuarios` y `auditoria`)
+con acciones `ver`, `crear`, `editar`, `eliminar`, más
+`usuarios.asignar-roles`, `usuarios.asignar-permisos` y `auditoria.ver`
+(este último solo de lectura y reservado al rol Administrador).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Crear usuarios
 
-## Security Vulnerabilities
+1. Ingresar con una cuenta `Administrador`.
+2. Ir al módulo **Usuarios** (sidebar) → **Nuevo usuario**.
+3. Llenar nombre, email, contraseña y asignar roles/permisos.
+4. Guardar.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+El primer usuario (creado por el seeder `AdminUserSeeder`) toma el rol
+**Administrador** automáticamente.
 
-## License
+### Verificar permisos
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Los permisos se aplican en:
+
+- `routes/web.php`: middleware `can:modulo.accion` por ruta.
+- `resources/views/navigation-menu.blade.php`: menús visibles según permisos.
+- Vistas de index/create/edit: botones de acción envueltos en `@can(...)`.
+
+Para re-ejecutar el seeder de roles (no re-crea los mismos permisos): queda
+como query simple de referencia en `RolePermissionSeeder::run`.
+
+## Colas
+
+- `QUEUE_CONNECTION=database`: los correos de credenciales y jobs de
+  Cloudinary se encolan en la tabla `jobs`.
+- En Render/Docker (`docker/start.sh`) se arranca `php artisan queue:work`
+  en segundo plano antes de Nginx.
+- En Wasmer Edge no hay worker: se usa `QUEUE_CONNECTION=sync` y los jobs
+  corren dentro de la misma petición.
+- Local: ejecutar `php artisan queue:work` en una terminal aparte.
+
+## Cloudinary
+
+Usado para firmas de asistencia (`AsistenciaController`) y fotografías
+(`PadreController`, lógica de foto actualmente comentada).
+
+### Rotar el API secret
+
+Por seguridad, rota el **API Secret** de Cloudinary:
+
+1. Entra a [Cloudinary Console](https://console.cloudinary.com) → Settings → Security.
+2. Pulsa **Rotate** en "API Secret".
+3. Copia el nuevo valor y reemplázalo en `.env` en: `CLOUDINARY_URL`, `CLOUDINARY_API_SECRET`.
+4. Sin borrar el preset; actualizar `CLOUDINARY_API_KEY` si cambió.
+5. Ejecuta `php artisan config:clear` y vuelve a cargar.
+
+El valor que está en `CLOUDINARY_URL` incluye el secret incrustado
+(`cloudinary://API_KEY:SECRET@cloud_name`); ambos deben coincidir.
+
+## Colores y tema
+
+- **Rosa** (`--primary`) y **verde** del ministerio.
+- Fuentes: Nunito Sans (UI) y Varela Round (títulos).
+- Estilo glassmorphism: `.glass`, `.glass-soft` en `resources/css/app.css`.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+## Despliegue
+
+### Wasmer Edge (producción actual)
+
+La app corre en Wasmer Edge con MySQL gestionado. El paquete se genera con:
+
+```bash
+powershell -ExecutionPolicy Bypass -File .\deploy\Build-WasmerDeploy.ps1
+```
+
+y se sube arrastrando `deploy/wasmer-upload/` (no ZIP) como nueva versión de
+la misma app, para conservar la base de datos y los secretos. Instrucciones,
+variables y errores conocidos en `deploy/README-WASMER.md`.
+
+Consideraciones: el filesystem es efímero (las imágenes viven en Cloudinary),
+no hay worker de colas ni scheduler automático, y `after_deploy` ejecuta
+`migrate --force --seed`.
+
+### Render / Docker (alternativa)
+
+El `docker/start.sh` espera `php-fpm`, `nginx`, `composer` y `node`, y arranca
+el worker de colas. Configura `APP_ENV=production`, `APP_DEBUG=false`, MySQL y
+las variables de `.env.example`.

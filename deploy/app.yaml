@@ -1,0 +1,70 @@
+# Configuracion de la app en Wasmer Edge.
+# Este archivo va en la RAIZ de la carpeta que subas a Wasmer.
+# Referencia: https://docs.wasmer.io/edge/configuration
+#
+# IMPORTANTE para PHP/Laravel (app de un solo hilo):
+#   scaling.mode = single_concurrency  (obligatorio, ver docs de app.yaml)
+# Sin esto, Edge puede mandar varias peticiones concurrentes a una
+# instancia PHP que solo atiende de a una y las respuestas fallan.
+
+kind: wasmer.io/App.v0
+name: ngikidsapp
+package: .
+
+# Valores NO secretos. Los secretos (APP_KEY, DB_*, CLOUDINARY_*, etc.)
+# se configuran despues de subir en el dashboard:
+#   Wasmer Dashboard > tu app > Settings > Secrets / Environment
+# o con el CLI: wasmer app secrets create CLAVE valor
+env:
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  LOG_CHANNEL: "stderr"
+  LOG_LEVEL: "warning"
+  # Sin worker de colas en Edge: los jobs (GenerateWalletPass,
+  # PadreRegistered) se ejecutan en linea en la misma peticion.
+  QUEUE_CONNECTION: "sync"
+  # Sesiones y cache en la BD remota para sobrevivir al FS efimero.
+  SESSION_DRIVER: "database"
+  CACHE_STORE: "database"
+  FILESYSTEM_DISK: "local"
+  APP_TIMEZONE: "America/Mexico_City"
+  TRUSTED_PROXIES: "*"
+  PRIVACIDAD_VERSION: "2026-11"
+
+scaling:
+  mode: single_concurrency
+
+# Laravel expone /up como health check (ver bootstrap/app.php -> health: '/up').
+health_checks:
+  - http:
+      method: get
+      path: /up
+      interval: 30s
+      timeout: 10s
+      unhealthy_threshold: 2
+      healthy_threshold: 1
+      expected_status_codes:
+        - 200
+
+capabilities:
+  # BD gestionada MySQL creada por Wasmer (una por app). Al desplegar,
+  # Wasmer inyecta DB_HOST, DB_PORT, DB_NAME, DB_USERNAME y DB_PASSWORD.
+  # OJO: inyecta DB_NAME (no DB_DATABASE): agrega DB_DATABASE manual
+  # en Secrets con el MISMO valor del Name de la tarjeta de la BD.
+  # En el flujo "Deploy from upload" equivale a activar "Enable Database".
+  database:
+    engine: mysql
+  # Acelera el arranque en frio de Laravel (muchos includes) 100-200x.
+  instaboot:
+    requests:
+      - path: /up
+      - path: /
+
+# Volumen persistente (OPCIONAL). Edge es efimero: lo que se escriba en
+# /app/storage se pierde al redesplegar/reiniciar. Como este proyecto
+# guarda uploads en Cloudinary y sesiones/cache en MySQL, NO lo necesitas.
+# Si algun dia guardas archivos locales, descomenta y crea el volumen
+# en el dashboard antes (solo 1 region a la vez):
+# volumes:
+#   - name: storage
+#     mount: /app/storage

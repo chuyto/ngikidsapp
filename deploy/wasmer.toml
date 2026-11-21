@@ -1,0 +1,24 @@
+# Manifiesto Wasmer para Laravel (ngikidsapp)
+# Fuente: https://docs.wasmer.io/edge/guides/laravel/
+# Este archivo va en la RAIZ de la carpeta que subas a Wasmer SOLO para
+# deploys por CLI (`wasmer deploy`). El flujo web de carga ignora este
+# manifiesto y usa Anybuild; Build-WasmerDeploy.ps1 no lo copia.
+
+[dependencies]
+"php/php" = "=8.3.4"
+
+[fs]
+"/app/" = "."
+
+[[command]]
+name = "run"
+module = "php/php:php"
+runner = "wasi"
+
+[command.annotations.wasi]
+# Equivale a: php -t /app/public -S 0.0.0.0:8080
+# Wasmer Edge enruta el trafico HTTP a este servidor interno.
+main-args = ["-t", "/app/public", "-S", "0.0.0.0:8080"]
+# php.ini personalizado (ver wasmer-config/php.ini).
+# Como /app ya contiene todo el proyecto, PHPRC apunta dentro de /app.
+env = ["PHPRC=/app/wasmer-config/"]

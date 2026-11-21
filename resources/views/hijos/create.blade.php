@@ -1,35 +1,27 @@
 <x-app-layout>
+    {{-- Header del Componente --}}
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Crear Hijo') }}
-        </h2>
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-brand-100 text-brand-600 rounded-2xl">
+                <i class="fa-solid fa-children text-xl"></i>
+            </div>
+            <div>
+                <h2 class="page-title leading-tight">{{ __('Crear Hijo') }}</h2>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">
+                    Catálogo · Nuevo Registro
+                </p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                <form action="{{ route('hijos.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">Nombre</label>
-                        <input type="text" name="nombre" id="nombre" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="padre_id">Padre</label>
-                        <select name="padre_id" id="padre_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            @foreach ($padres as $padre)
-                                <option value="{{ $padre->id }}">{{ $padre->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="flex items-center justify-between">
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Crear
-                        </button>
-                    </div>
-                </form>
+    <div class="max-w-3xl mx-auto">
+        <div class="card overflow-hidden">
+            <div class="p-8 border-b border-slate-100">
+                <h3 class="font-heading text-xl text-slate-900">Datos del niño</h3>
+                <p class="text-sm font-semibold text-slate-500">Completa la información para registrar al niño.</p>
+            </div>
+            <div class="p-8">
+                @include('hijos._form')
             </div>
         </div>
     </div>

@@ -7,11 +7,13 @@
                 input: [
                     'resources/css/app.css',
                     'resources/js/app.js',
+                    // Bundle aparte: solo se carga en Control de Asistencia.
+                    'resources/js/scanner-asistencia.js',
                 ],
                 refresh: true,
             }),
         ],
         server: {
-            https: true,
+            https: false,
         }
     });

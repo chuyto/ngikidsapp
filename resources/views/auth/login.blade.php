@@ -4,11 +4,14 @@
             <x-authentication-card-logo />
         </x-slot>
 
+        <h1 class="font-heading text-2xl text-slate-900 text-center mb-1">Bienvenido de nuevo</h1>
+        <p class="text-sm text-slate-500 text-center mb-8">Ingresa con tu cuenta para continuar</p>
+
         <x-validation-errors class="mb-4" />
 
         @session('status')
-            <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-                {{ $value }}
+            <div class="mb-4 flex items-center gap-2 font-medium text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3" role="alert">
+                <i class="fa-solid fa-circle-check"></i> {{ $value }}
             </div>
         @endsession
 
@@ -16,31 +19,38 @@
             @csrf
 
             <div>
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+                <x-label for="email" value="{{ __('Correo electrónico') }}" />
+                <div class="relative">
+                    <i class="fa-solid fa-envelope text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 text-sm"></i>
+                    <x-input id="email" class="pl-11" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="tucorreo@ejemplo.com" />
+                </div>
             </div>
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+            <div class="mt-5">
+                <x-label for="password" value="{{ __('Contraseña') }}" />
+                <div class="relative">
+                    <i class="fa-solid fa-lock text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 text-sm"></i>
+                    <x-input id="password" class="pl-11" type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+                </div>
             </div>
 
-            <div class="block mt-4">
-                <label for="remember_me" class="flex items-center">
-                    <x-checkbox id="remember_me" name="remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
+            <div class="flex items-center justify-between mt-5">
+                <label for="remember_me" class="flex items-center cursor-pointer select-none">
+                    <x-checkbox id="remember_me" name="remember" class="rounded-md border-slate-300 text-brand-600 focus:ring-brand-500" />
+                    <span class="ms-2 text-sm font-semibold text-slate-600">{{ __('Recordarme') }}</span>
                 </label>
-            </div>
 
-            <div class="flex items-center justify-end mt-4">
                 @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
+                    <a class="link text-sm" href="{{ route('password.request') }}">
+                        {{ __('¿Olvidaste tu contraseña?') }}
                     </a>
                 @endif
+            </div>
 
-                <x-button class="ms-4">
-                    {{ __('Log in') }}
+            <div class="mt-8">
+                <x-button class="w-full">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    {{ __('Iniciar sesión') }}
                 </x-button>
             </div>
         </form>

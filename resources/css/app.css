@@ -5,3 +5,157 @@
 [x-cloak] {
     display: none;
 }
+
+@layer utilities {
+    /* Altura = viewport real (100vh con fallback a dvh en móviles) */
+    .h-app {
+        height: 100vh;
+    }
+
+    @supports (height: 100dvh) {
+        .h-app {
+            height: 100dvh;
+        }
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-cream text-slate-800 antialiased;
+    }
+
+    ::selection {
+        @apply bg-brand-200 text-brand-900;
+    }
+}
+
+@layer components {
+    /* ---- Vidrio / Glass ---- */
+    .glass {
+        @apply bg-white/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/60 shadow-[0_8px_32px_rgba(30,25,24,0.08)];
+    }
+
+    .glass-soft {
+        @apply bg-white/50 backdrop-blur-xl backdrop-saturate-150 border border-white/50 shadow-[0_4px_20px_rgba(30,25,24,0.06)];
+    }
+
+    /* ---- Tarjetas ---- */
+    .card {
+        @apply glass rounded-3xl;
+    }
+
+    .card-hover {
+        @apply transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_12px_40px_rgba(30,25,24,0.12)];
+    }
+
+    /* ---- Botones ---- */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2.5 cursor-pointer select-none rounded-full px-6 py-3 text-sm font-bold transition-all duration-200 focus:outline-none focus-visible:ring-4 disabled:opacity-50 disabled:pointer-events-none;
+    }
+
+    .btn-primary {
+        @apply btn bg-brand-600/90 backdrop-blur-md text-white border border-white/40 shadow-[0_10px_24px_-10px_rgba(253,136,1,0.45)] hover:bg-brand-500 focus-visible:ring-brand-200 active:translate-y-[1px] active:shadow-[0_4px_10px_-6px_rgba(253,136,1,0.4)];
+    }
+
+    .btn-secondary {
+        @apply btn glass text-slate-700 hover:bg-white/90 hover:shadow-[0_8px_24px_rgba(30,25,24,0.1)] focus-visible:ring-slate-200 active:translate-y-[1px];
+    }
+
+    .btn-success {
+        @apply btn bg-emerald-600/90 backdrop-blur-md text-white border border-white/40 shadow-[0_10px_24px_-10px_rgba(5,150,105,0.55)] hover:bg-emerald-500 focus-visible:ring-emerald-200 active:translate-y-[1px];
+    }
+
+    .btn-danger {
+        @apply btn bg-brand-600/90 backdrop-blur-md text-white border border-white/40 shadow-[0_10px_24px_-10px_rgba(253,136,1,0.45)] hover:bg-brand-500 focus-visible:ring-brand-200 active:translate-y-[1px];
+    }
+
+    .btn-ghost {
+        @apply btn glass-soft text-slate-600 hover:text-slate-900 hover:bg-white/80 focus-visible:ring-slate-200;
+    }
+
+    .btn-icon {
+        @apply inline-flex items-center justify-center cursor-pointer w-10 h-10 rounded-full text-slate-500 glass transition-all duration-200 hover:bg-white/90 hover:text-brand-600 hover:shadow-[0_8px_24px_rgba(30,25,24,0.1)] focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-100 active:translate-y-[1px];
+    }
+
+    /* ---- Formularios ---- */
+    .input {
+        @apply w-full rounded-2xl border border-white/70 bg-white/70 backdrop-blur-md px-4 py-3 text-slate-800 placeholder:text-slate-400 shadow-sm transition-all duration-200 focus:border-brand-300 focus:ring-4 focus:ring-brand-100 outline-none;
+    }
+
+    .label {
+        @apply block text-sm font-bold text-slate-700 mb-1.5;
+    }
+
+    .input-error {
+        @apply border-brand-300 ring-4 ring-brand-100;
+    }
+
+    /* ---- Badges ---- */
+    .badge {
+        @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide;
+    }
+
+    .badge-success {
+        @apply badge bg-emerald-50/80 text-emerald-700 border border-emerald-200/80 backdrop-blur-sm;
+    }
+
+    .badge-primary {
+        @apply badge bg-brand-50/80 text-brand-700 border border-brand-200/80 backdrop-blur-sm;
+    }
+
+    .badge-warning {
+        @apply badge bg-amber-50/80 text-amber-700 border border-amber-200/80 backdrop-blur-sm;
+    }
+
+    .badge-danger {
+        @apply badge bg-brand-50/80 text-brand-700 border border-brand-200/80 backdrop-blur-sm;
+    }
+
+    .badge-info {
+        @apply badge bg-sky-50/80 text-sky-700 border border-sky-200/80 backdrop-blur-sm;
+    }
+
+    .badge-neutral {
+        @apply badge bg-slate-100/80 text-slate-600 border border-slate-200/80 backdrop-blur-sm;
+    }
+
+    /* ---- Navegación ---- */
+    .nav-item {
+        @apply flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-600 transition-all duration-200 cursor-pointer hover:bg-white/70 hover:text-brand-700 hover:shadow-[0_4px_16px_rgba(30,25,24,0.06)];
+    }
+
+    .nav-item-active {
+        @apply bg-brand-600/90 backdrop-blur-md text-white border border-white/30 shadow-[0_10px_20px_-10px_rgba(253,136,1,0.5)] hover:bg-brand-600 hover:text-white;
+    }
+
+    /* ---- Tablas ---- */
+    .th {
+        @apply px-6 py-4 text-left text-[11px] font-extrabold uppercase tracking-wider text-slate-500;
+    }
+
+    .td {
+        @apply px-6 py-4 text-sm text-slate-700;
+    }
+
+    .table-card-mobile {
+        @apply min-w-full divide-y divide-slate-100;
+    }
+
+    .empty-action {
+        @apply mt-5 inline-flex;
+    }
+
+    /* ---- Tipografía de página ---- */
+    .page-title {
+        @apply font-heading text-2xl text-slate-900;
+    }
+
+    .section-title {
+        @apply font-heading text-lg text-slate-900;
+    }
+
+    /* ---- Enlaces ---- */
+    .link {
+        @apply font-bold text-brand-600 transition-colors duration-200 hover:text-brand-500;
+    }
+}

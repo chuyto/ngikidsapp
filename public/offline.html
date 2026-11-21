@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#CF7001">
+    <title>Sin conexión · NGIKids</title>
+    <style>
+        :root { color-scheme: light; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: #F6EED9;
+            color: #0f172a;
+            font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            border-radius: 28px;
+            padding: 40px 32px;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, .12);
+            border: 1px solid rgba(15, 23, 42, .06);
+        }
+        .icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+            display: grid;
+            place-items: center;
+            border-radius: 24px;
+            background: #FFF3E0;
+            color: #CF7001;
+            font-size: 34px;
+        }
+        h1 { margin: 0 0 8px; font-size: 24px; letter-spacing: -.02em; }
+        p { margin: 0; color: #64748b; line-height: 1.6; font-size: 15px; }
+        button {
+            margin-top: 24px;
+            width: 100%;
+            border: 0;
+            border-radius: 16px;
+            padding: 14px 20px;
+            background: #CF7001;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        button:active { transform: translateY(1px); }
+        .hint { margin-top: 16px; font-size: 12px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="icon" aria-hidden="true">!</div>
+        <h1>Sin conexión</h1>
+        <p>No pudimos cargar esta página. Revisa tu conexión a internet e inténtalo de nuevo.</p>
+        <button type="button" onclick="location.reload()">Reintentar</button>
+        <p class="hint">Por seguridad, las páginas con datos de las familias no se guardan en el dispositivo.</p>
+    </main>
+</body>
+</html>

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Servicio extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'descripcion_servicio',
         'horario_servicio',
@@ -16,5 +17,8 @@ class Servicio extends Model
         // Otros campos que puedas tener
     ];
 
-
+    public function supervisores()
+    {
+        return $this->belongsToMany(Supervisor::class, 'servicio_supervisor');
+    }
 }

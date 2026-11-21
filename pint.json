@@ -1,0 +1,8 @@
+{
+    "preset": "laravel",
+    "exclude": [
+        "deploy",
+        "public/build",
+        "storage"
+    ]
+}

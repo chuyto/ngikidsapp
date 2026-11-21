@@ -14,7 +14,24 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['"Nunito Sans"', ...defaultTheme.fontFamily.sans],
+                heading: ['"Varela Round"', '"Nunito Sans"', 'sans-serif'],
+            },
+            colors: {
+                cream: '#F6EED9',
+                brand: {
+                    50: '#FFF9F2',
+                    100: '#FFF3E6',
+                    200: '#FEE1C0',
+                    300: '#FEC98D',
+                    400: '#FEAC4D',
+                    500: '#FD8801',
+                    600: '#CF7001',
+                    700: '#9D5401',
+                    800: '#723D00',
+                    900: '#472600',
+                    950: '#261400',
+                },
             },
         },
     },

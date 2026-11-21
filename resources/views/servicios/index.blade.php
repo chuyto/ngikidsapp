@@ -1,51 +1,128 @@
-<!-- resources/views/padres/index.blade.php -->
 <x-app-layout>
+    {{-- Header del Componente --}}
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Servicios') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-6">
-                <div class="flex justify-between mb-6">
-                    <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-200">Servicios</h1>
-                    <a href="{{ route('servicios.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700">
-                        Agregar Nuevo Registro
-                    </a>
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+                <div class="p-2.5 bg-brand-100 text-brand-600 rounded-2xl">
+                    <i class="fa-solid fa-calendar-days text-xl"></i>
                 </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Descripción del Servicio</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Horario del Servicio</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Fecha del Servicio</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Activo</th>
-                                <th scope="col" class="relative py-3.5 pl-3 pr-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">
-                                    <span class="sr-only">Acciones</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                            @foreach ($servicios as $servicio)
-                                <tr>
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-200">{{ $servicio->descripcion_servicio }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicio->horario_servicio }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicio->fecha_servicio }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300">{{ $servicio->activo ? 'Si' : 'No' }}</td>
-                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
-                                        <a href="{{ route('servicios.show', $servicio->id) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">Ver Servicio</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-
-                    </table>
+                <div>
+                    <h2 class="page-title leading-tight">{{ __('Gestión de Servicios') }}</h2>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-0.5">
+                        Configuración · Catálogo de Eventos
+                    </p>
                 </div>
             </div>
+        </div>
+    </x-slot>
+
+    <div class="space-y-6">
+
+        {{-- Panel Principal --}}
+        <div class="card overflow-hidden">
+
+            {{-- Toolbar Superior --}}
+            <div class="p-8 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-6">
+                <div>
+                    <h1 class="font-heading text-2xl text-slate-900">Catálogo de Servicios</h1>
+                    <p class="mt-1 text-sm text-slate-500 font-semibold">Administra los servicios activos para el registro de asistencia.</p>
+                </div>
+                @can('servicios.crear')
+                <x-create-modal title="Nuevo Servicio" icon="fa-calendar-plus">
+                    @include('servicios._form')
+                </x-create-modal>
+                @endcan
+            </div>
+
+            <x-table-toolbar :action="route('servicios.index')" placeholder="Buscar servicio..."
+                             :sorts="['recientes' => 'Fecha más reciente', 'antiguos' => 'Fecha más antigua', 'descripcion' => 'Descripción A–Z']" />
+
+            {{-- Tabla Estilizada --}}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-100">
+                    <thead class="bg-slate-50/60 border-y border-slate-100">
+                        <tr>
+                            <th class="th">Descripción</th>
+                            <th class="th">Horario</th>
+                            <th class="th">Fecha</th>
+                            <th class="th text-center">Estado</th>
+                            <th class="th text-right">Reportes</th>
+                            <th class="th text-right">Editar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach ($servicios as $servicio)
+                            <tr class="hover:bg-brand-50/40 transition-all duration-150">
+                                <td class="td whitespace-nowrap font-extrabold text-slate-800">
+                                    {{ $servicio->descripcion_servicio }}
+                                    <div class="mt-1 flex flex-wrap gap-1.5">
+                                        @foreach($servicio->supervisores as $supervisor)
+                                            <span class="text-[10px] font-bold text-slate-400">
+                                                <i class="fa-solid fa-circle text-[5px] text-brand-400 mr-1 align-middle"></i>{{ $supervisor->nombre }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                </td>
+                                <td class="td">
+                                    <span class="inline-flex items-center text-slate-600 font-semibold">
+                                        <i class="fa-regular fa-clock text-slate-400 mr-2"></i>{{ $servicio->horario_servicio }}
+                                    </span>
+                                </td>
+                                <td class="td text-slate-600 font-semibold">{{ \Carbon\Carbon::parse($servicio->fecha_servicio)->format('d/m/Y') }}</td>
+                                <td class="td text-center">
+                                    @if($servicio->activo)
+                                        <span class="badge-success">
+                                            <span class="relative flex h-1.5 w-1.5">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                                            </span>
+                                            Activo
+                                        </span>
+                                    @else
+                                        <span class="badge-neutral"><i class="fa-solid fa-circle-minus"></i> Inactivo</span>
+                                    @endif
+                                </td>
+                                <td class="td whitespace-nowrap text-right">
+                                    @can('reportes.ver')
+                                    <div class="inline-flex items-center gap-2">
+                                        <a href="{{ route('reportes.index', ['servicio_id' => $servicio->id]) }}"
+                                           class="btn-ghost px-4 py-2 text-xs">
+                                            <i class="fa-solid fa-eye"></i> Detalle
+                                        </a>
+                                        <a href="{{ route('reportes.pdf', ['servicio_id' => $servicio->id]) }}"
+                                           class="btn-icon" title="Descargar PDF" aria-label="Descargar PDF">
+                                            <i class="fa-solid fa-file-pdf text-red-500"></i>
+                                        </a>
+                                    </div>
+                                    @else
+                                        <span class="text-slate-300 font-mono" aria-hidden="true">—</span>
+                                    @endcan
+                                </td>
+                                <td class="td whitespace-nowrap text-right">
+                                    @can('servicios.editar')
+                                    <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn-icon" title="Editar" aria-label="Editar servicio">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    @endcan
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            @if($servicios->isEmpty())
+                <div class="p-16 text-center">
+                    <div class="inline-flex p-6 rounded-full bg-slate-100 mb-4">
+                        <i class="fa-solid fa-calendar-xmark text-4xl text-slate-400"></i>
+                    </div>
+                    <h3 class="font-heading text-xl text-slate-700">No hay servicios registrados</h3>
+                    <p class="text-slate-400 mt-1">Comienza creando el primer evento del ministerio.</p>
+                </div>
+            @endif
+            @if($servicios->hasPages())
+                <div class="px-6 py-4 border-t border-slate-100">{{ $servicios->links() }}</div>
+            @endif
         </div>
     </div>
 </x-app-layout>
